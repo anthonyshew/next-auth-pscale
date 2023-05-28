@@ -1,15 +1,17 @@
 "use client";
 
-import { signIn, signOut, getSession } from "next-auth/react";
-import { Session } from "next-auth";
+import { signIn, signOut, useSession } from "next-auth/react";
 
-export const Buttons = ({ session }: { session: Session | null }) => {
+export const Buttons = () => {
+  const { status } = useSession();
   return (
     <div>
-      {!session ? (
-        <button onClick={() => signIn()}>Sign in</button>
-      ) : (
+      {status == "loading" ? (
+        <p>Loading...</p>
+      ) : status === "authenticated" ? (
         <button onClick={() => signOut()}>Sign out</button>
+      ) : (
+        <button onClick={() => signIn()}>Sign in</button>
       )}
     </div>
   );
