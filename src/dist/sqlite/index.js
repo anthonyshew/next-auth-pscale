@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PgAdapter = void 0;
-const drizzle_orm_1 = require("drizzle-orm");
+exports.SQLiteAdapter = void 0;
 const uuid_1 = require("uuid");
+const drizzle_orm_1 = require("drizzle-orm");
 /**
  * ## Setup
  *
@@ -92,39 +92,39 @@ const uuid_1 = require("uuid");
  * ```
  *
  **/
-function PgAdapter(client, { users, sessions, verificationTokens, accounts }) {
+function SQLiteAdapter(client, { users, sessions, accounts, verificationTokens }) {
     return {
-        createUser: async (data) => {
+        createUser: (data) => {
             return client
                 .insert(users)
                 .values({ ...data, id: (0, uuid_1.v4)() })
                 .returning()
-                .then(res => res[0]);
+                .get();
         },
-        getUser: async (data) => {
+        getUser: (data) => {
             var _a;
             return (_a = client
                 .select()
                 .from(users)
                 .where((0, drizzle_orm_1.eq)(users.id, data))
-                .then(res => res[0])) !== null && _a !== void 0 ? _a : null;
+                .get()) !== null && _a !== void 0 ? _a : null;
         },
-        getUserByEmail: async (data) => {
+        getUserByEmail: (data) => {
             var _a;
             return (_a = client
                 .select()
                 .from(users)
                 .where((0, drizzle_orm_1.eq)(users.email, data))
-                .then(res => res[0])) !== null && _a !== void 0 ? _a : null;
+                .get()) !== null && _a !== void 0 ? _a : null;
         },
-        createSession: async (data) => {
+        createSession: (data) => {
             return client
                 .insert(sessions)
                 .values(data)
                 .returning()
-                .then(res => res[0]);
+                .get();
         },
-        getSessionAndUser: async (data) => {
+        getSessionAndUser: (data) => {
             var _a;
             return (_a = client.select({
                 session: sessions,
@@ -133,9 +133,9 @@ function PgAdapter(client, { users, sessions, verificationTokens, accounts }) {
                 .from(sessions)
                 .where((0, drizzle_orm_1.eq)(sessions.sessionToken, data))
                 .innerJoin(users, (0, drizzle_orm_1.eq)(users.id, sessions.userId))
-                .then(res => res[0])) !== null && _a !== void 0 ? _a : null;
+                .get()) !== null && _a !== void 0 ? _a : null;
         },
-        updateUser: async (data) => {
+        updateUser: (data) => {
             if (!data.id) {
                 throw new Error("No user id.");
             }
@@ -144,25 +144,23 @@ function PgAdapter(client, { users, sessions, verificationTokens, accounts }) {
                 .set(data)
                 .where((0, drizzle_orm_1.eq)(users.id, data.id))
                 .returning()
-                .then(res => res[0]);
+                .get();
         },
-        updateSession: async (data) => {
+        updateSession: (data) => {
             return client
                 .update(sessions)
                 .set(data)
                 .where((0, drizzle_orm_1.eq)(sessions.sessionToken, data.sessionToken))
                 .returning()
-                .then(res => res[0]);
+                .get();
         },
-        linkAccount: async (rawAccount) => {
+        linkAccount: (rawAccount) => {
             var _a, _b, _c, _d, _e, _f, _g;
-            const updatedAccount = await client
+            const updatedAccount = client
                 .insert(accounts)
                 .values(rawAccount)
                 .returning()
-                .then(res => res[0]);
-            // Drizzle will return `null` for fields that are not defined.
-            // However, the return type is expecting `undefined`.
+                .get();
             const account = {
                 ...updatedAccount,
                 access_token: (_a = updatedAccount.access_token) !== null && _a !== void 0 ? _a : undefined,
@@ -175,51 +173,58 @@ function PgAdapter(client, { users, sessions, verificationTokens, accounts }) {
             };
             return account;
         },
-        getUserByAccount: async (account) => {
+        getUserByAccount: (account) => {
             var _a;
-            const user = (_a = await client.select()
+            const user = (_a = client.select()
                 .from(users)
                 .innerJoin(accounts, ((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(accounts.providerAccountId, account.providerAccountId), (0, drizzle_orm_1.eq)(accounts.provider, account.provider))))
-                .then(res => res[0])) !== null && _a !== void 0 ? _a : null;
-            return user.users;
+                .get()) !== null && _a !== void 0 ? _a : null;
+            if (user) {
+                return user.users;
+            }
+            return null;
         },
-        deleteSession: async (sessionToken) => {
-            await client
+        deleteSession: (sessionToken) => {
+            var _a;
+            return (_a = client
                 .delete(sessions)
-                .where((0, drizzle_orm_1.eq)(sessions.sessionToken, sessionToken));
+                .where((0, drizzle_orm_1.eq)(sessions.sessionToken, sessionToken))
+                .returning()
+                .get()) !== null && _a !== void 0 ? _a : null;
         },
-        createVerificationToken: async (token) => {
+        createVerificationToken: (token) => {
             return client
                 .insert(verificationTokens)
                 .values(token)
                 .returning()
-                .then(res => res[0]);
+                .get();
         },
-        useVerificationToken: async (token) => {
+        useVerificationToken: (token) => {
             var _a;
             try {
                 return (_a = client
                     .delete(verificationTokens)
                     .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(verificationTokens.identifier, token.identifier), (0, drizzle_orm_1.eq)(verificationTokens.token, token.token)))
                     .returning()
-                    .then(res => res[0])) !== null && _a !== void 0 ? _a : null;
+                    .get()) !== null && _a !== void 0 ? _a : null;
             }
             catch (err) {
                 throw new Error("No verification token found.");
             }
         },
-        deleteUser: async (id) => {
-            await client
+        deleteUser: (id) => {
+            return client
                 .delete(users)
                 .where((0, drizzle_orm_1.eq)(users.id, id))
                 .returning()
-                .then(res => res[0]);
+                .get();
         },
-        unlinkAccount: async (account) => {
-            await client.delete(accounts)
-                .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(accounts.providerAccountId, account.providerAccountId), (0, drizzle_orm_1.eq)(accounts.provider, account.provider)));
+        unlinkAccount: (account) => {
+            client.delete(accounts)
+                .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(accounts.providerAccountId, account.providerAccountId), (0, drizzle_orm_1.eq)(accounts.provider, account.provider)))
+                .run();
             return undefined;
         }
     };
 }
-exports.PgAdapter = PgAdapter;
+exports.SQLiteAdapter = SQLiteAdapter;

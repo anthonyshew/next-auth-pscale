@@ -80,12 +80,15 @@ function MySqlAdapter(client, { users, sessions, verificationTokens, accounts })
         },
         getUserByAccount: async (account) => {
             var _a;
-            const user = (_a = (await client
+            const user = (_a = await client
                 .select()
                 .from(users)
                 .innerJoin(accounts, (0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(accounts.providerAccountId, account.providerAccountId), (0, drizzle_orm_1.eq)(accounts.provider, account.provider)))
-                .then((res) => res[0]))) !== null && _a !== void 0 ? _a : null;
-            return user.users;
+                .then((res) => res[0])) !== null && _a !== void 0 ? _a : null;
+            if (user) {
+                return user.users;
+            }
+            return null;
         },
         deleteSession: async (sessionToken) => {
             await client

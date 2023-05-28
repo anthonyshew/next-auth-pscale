@@ -9,9 +9,19 @@ export const Buttons = () => {
       {status == "loading" ? (
         <p>Loading...</p>
       ) : status === "authenticated" ? (
-        <button onClick={() => signOut()}>Sign out</button>
+        <button
+          style={{ background: "white", padding: "2px 8px", color: "black" }}
+          onClick={() => signOut()}
+        >
+          Sign out
+        </button>
       ) : (
-        <button onClick={() => signIn()}>Sign in</button>
+        <button
+          style={{ background: "white", padding: "2px 8px", color: "black" }}
+          onClick={() => signIn()}
+        >
+          Sign in
+        </button>
       )}
     </div>
   );

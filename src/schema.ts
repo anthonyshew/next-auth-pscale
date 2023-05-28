@@ -1,3 +1,5 @@
+import { migrator } from "@/migrator"
+import { createPool } from "@vercel/postgres"
 import {
   integer,
   timestamp,
@@ -6,11 +8,7 @@ import {
   primaryKey,
 } from "drizzle-orm/pg-core"
 import { drizzle } from "drizzle-orm/vercel-postgres"
-import { createPool } from '@vercel/postgres'
-import { migrate } from 'drizzle-orm/vercel-postgres/migrator'
 import { ProviderType } from "next-auth/providers"
-
-const queryConnection = createPool({ connectionString: process.env.DATABASE_URL })
 
 export const users = pgTable("users", {
   id: text("id").notNull().primaryKey(),
@@ -18,6 +16,7 @@ export const users = pgTable("users", {
   email: text("email").notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
+  phone: text("phone")
 })
 
 export const accounts = pgTable(
@@ -62,15 +61,5 @@ export const verificationTokens = pgTable(
   })
 )
 
+const queryConnection = createPool({ connectionString: process.env.POSTGRES_URL })
 export const db = drizzle(queryConnection)
-
-export type DbClient = typeof db
-
-export type Schema = {
-  users: typeof users
-  accounts: typeof accounts
-  sessions: typeof sessions
-  verificationTokens: typeof verificationTokens
-}
-
-await migrate(db, { migrationsFolder: "drizzle" });

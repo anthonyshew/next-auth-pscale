@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SQLiteAdapter = void 0;
-const uuid_1 = require("uuid");
+exports.PgAdapter = void 0;
 const drizzle_orm_1 = require("drizzle-orm");
+const uuid_1 = require("uuid");
 /**
  * ## Setup
  *
@@ -92,39 +92,42 @@ const drizzle_orm_1 = require("drizzle-orm");
  * ```
  *
  **/
-function SQLiteAdapter(client, { users, sessions, accounts, verificationTokens }) {
+function PgAdapter(client, { users, sessions, verificationTokens, accounts }) {
     return {
-        createUser: (data) => {
+        createUser: async (data) => {
             return client
                 .insert(users)
                 .values({ ...data, id: (0, uuid_1.v4)() })
                 .returning()
-                .get();
+                .then(res => {
+                console.log(res);
+                return res[0];
+            });
         },
-        getUser: (data) => {
+        getUser: async (data) => {
             var _a;
             return (_a = client
                 .select()
                 .from(users)
                 .where((0, drizzle_orm_1.eq)(users.id, data))
-                .get()) !== null && _a !== void 0 ? _a : null;
+                .then(res => res[0])) !== null && _a !== void 0 ? _a : null;
         },
-        getUserByEmail: (data) => {
+        getUserByEmail: async (data) => {
             var _a;
             return (_a = client
                 .select()
                 .from(users)
                 .where((0, drizzle_orm_1.eq)(users.email, data))
-                .get()) !== null && _a !== void 0 ? _a : null;
+                .then(res => res[0])) !== null && _a !== void 0 ? _a : null;
         },
-        createSession: (data) => {
+        createSession: async (data) => {
             return client
                 .insert(sessions)
                 .values(data)
                 .returning()
-                .get();
+                .then(res => res[0]);
         },
-        getSessionAndUser: (data) => {
+        getSessionAndUser: async (data) => {
             var _a;
             return (_a = client.select({
                 session: sessions,
@@ -133,9 +136,9 @@ function SQLiteAdapter(client, { users, sessions, accounts, verificationTokens }
                 .from(sessions)
                 .where((0, drizzle_orm_1.eq)(sessions.sessionToken, data))
                 .innerJoin(users, (0, drizzle_orm_1.eq)(users.id, sessions.userId))
-                .get()) !== null && _a !== void 0 ? _a : null;
+                .then(res => res[0])) !== null && _a !== void 0 ? _a : null;
         },
-        updateUser: (data) => {
+        updateUser: async (data) => {
             if (!data.id) {
                 throw new Error("No user id.");
             }
@@ -144,23 +147,25 @@ function SQLiteAdapter(client, { users, sessions, accounts, verificationTokens }
                 .set(data)
                 .where((0, drizzle_orm_1.eq)(users.id, data.id))
                 .returning()
-                .get();
+                .then(res => res[0]);
         },
-        updateSession: (data) => {
+        updateSession: async (data) => {
             return client
                 .update(sessions)
                 .set(data)
                 .where((0, drizzle_orm_1.eq)(sessions.sessionToken, data.sessionToken))
                 .returning()
-                .get();
+                .then(res => res[0]);
         },
-        linkAccount: (rawAccount) => {
+        linkAccount: async (rawAccount) => {
             var _a, _b, _c, _d, _e, _f, _g;
-            const updatedAccount = client
+            const updatedAccount = await client
                 .insert(accounts)
                 .values(rawAccount)
                 .returning()
-                .get();
+                .then(res => res[0]);
+            // Drizzle will return `null` for fields that are not defined.
+            // However, the return type is expecting `undefined`.
             const account = {
                 ...updatedAccount,
                 access_token: (_a = updatedAccount.access_token) !== null && _a !== void 0 ? _a : undefined,
@@ -173,55 +178,54 @@ function SQLiteAdapter(client, { users, sessions, accounts, verificationTokens }
             };
             return account;
         },
-        getUserByAccount: (account) => {
+        getUserByAccount: async (account) => {
             var _a;
-            const user = (_a = client.select()
+            const user = (_a = await client.select()
                 .from(users)
                 .innerJoin(accounts, ((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(accounts.providerAccountId, account.providerAccountId), (0, drizzle_orm_1.eq)(accounts.provider, account.provider))))
-                .get()) !== null && _a !== void 0 ? _a : null;
-            return user.users;
+                .then(res => res[0])) !== null && _a !== void 0 ? _a : null;
+            if (user) {
+                return user.users;
+            }
+            return null;
         },
-        deleteSession: (sessionToken) => {
-            var _a;
-            return (_a = client
+        deleteSession: async (sessionToken) => {
+            await client
                 .delete(sessions)
-                .where((0, drizzle_orm_1.eq)(sessions.sessionToken, sessionToken))
-                .returning()
-                .get()) !== null && _a !== void 0 ? _a : null;
+                .where((0, drizzle_orm_1.eq)(sessions.sessionToken, sessionToken));
         },
-        createVerificationToken: (token) => {
+        createVerificationToken: async (token) => {
             return client
                 .insert(verificationTokens)
                 .values(token)
                 .returning()
-                .get();
+                .then(res => res[0]);
         },
-        useVerificationToken: (token) => {
+        useVerificationToken: async (token) => {
             var _a;
             try {
                 return (_a = client
                     .delete(verificationTokens)
                     .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(verificationTokens.identifier, token.identifier), (0, drizzle_orm_1.eq)(verificationTokens.token, token.token)))
                     .returning()
-                    .get()) !== null && _a !== void 0 ? _a : null;
+                    .then(res => res[0])) !== null && _a !== void 0 ? _a : null;
             }
             catch (err) {
                 throw new Error("No verification token found.");
             }
         },
-        deleteUser: (id) => {
-            return client
+        deleteUser: async (id) => {
+            await client
                 .delete(users)
                 .where((0, drizzle_orm_1.eq)(users.id, id))
                 .returning()
-                .get();
+                .then(res => res[0]);
         },
-        unlinkAccount: (account) => {
-            client.delete(accounts)
-                .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(accounts.providerAccountId, account.providerAccountId), (0, drizzle_orm_1.eq)(accounts.provider, account.provider)))
-                .run();
+        unlinkAccount: async (account) => {
+            await client.delete(accounts)
+                .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(accounts.providerAccountId, account.providerAccountId), (0, drizzle_orm_1.eq)(accounts.provider, account.provider)));
             return undefined;
         }
     };
 }
-exports.SQLiteAdapter = SQLiteAdapter;
+exports.PgAdapter = PgAdapter;
