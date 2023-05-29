@@ -1,12 +1,13 @@
 "use client";
 
 import { signIn, signOut, useSession } from "next-auth/react";
-import { updatePhoneNumber } from "@/app/actions";
+import { updatePhoneNumber, deleteMe } from "@/app/actions";
 import { useTransition } from "react";
 
 export const Buttons = () => {
   const { status, data } = useSession();
-  let [isPending, startTransition] = useTransition();
+  let [_, startUpdateTransition] = useTransition();
+  let [__, startDeleteTransition] = useTransition();
 
   return (
     <div>
@@ -17,12 +18,20 @@ export const Buttons = () => {
           <button
             className="px-6 py-2 text-black bg-white"
             onClick={() =>
-              startTransition(() =>
-                updatePhoneNumber({ username: data.user.name! })
+              startUpdateTransition(() =>
+                updatePhoneNumber({ userId: data.user.id })
               )
             }
           >
             Update my phone number
+          </button>
+          <button
+            className="px-6 py-2 text-black bg-white"
+            onClick={() =>
+              startUpdateTransition(() => deleteMe({ userId: data.user.id }))
+            }
+          >
+            Delete my user
           </button>
           <button
             className="px-6 py-2 text-black bg-white"
