@@ -100,7 +100,6 @@ function PgAdapter(client, { users, sessions, verificationTokens, accounts }) {
                 .values({ ...data, id: (0, uuid_1.v4)() })
                 .returning()
                 .then(res => {
-                console.log(res);
                 return res[0];
             });
         },

@@ -4,17 +4,17 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "generate": "dotenv drizzle-kit generate:pg",
-    "migrate": "dotenv drizzle-kit push:pg",
+    "generate": "dotenv drizzle-kit generate:mysql",
+    "migrate": "dotenv drizzle-kit push:myql",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@planetscale/database": "^1.7.0",
     "@types/node": "20.1.2",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
-    "@vercel/postgres": "^0.3.0",
     "autoprefixer": "10.4.14",
     "drizzle-kit": "^0.18.1",
     "drizzle-orm": "^0.26.1",

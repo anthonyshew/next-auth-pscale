@@ -1,59 +1,54 @@
-import { migrator } from "@/migrator"
-import { createPool } from "@vercel/postgres"
 import {
-  integer,
+  int,
   timestamp,
-  pgTable,
-  text,
+  mysqlTable,
+  varchar,
   primaryKey,
-} from "drizzle-orm/pg-core"
-import { drizzle } from "drizzle-orm/vercel-postgres"
+} from "drizzle-orm/mysql-core"
+import { drizzle } from 'drizzle-orm/planetscale-serverless'
 import { ProviderType } from "next-auth/providers"
+import { connect } from "@planetscale/database";
 
-export const users = pgTable("users", {
-  id: text("id").notNull().primaryKey(),
-  name: text("name"),
-  email: text("email").notNull(),
+
+export const users = mysqlTable("users", {
+  id: varchar("id", { length: 255 }).notNull().primaryKey(),
+  name: varchar("name", { length: 255 }),
+  email: varchar("email", { length: 255 }).notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
-  image: text("image"),
-  phone: text("phone")
+  image: varchar("image", { length: 255 }),
 })
 
-export const accounts = pgTable(
+export const accounts = mysqlTable(
   "accounts",
   {
-    userId: text("userId")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").$type<ProviderType>().notNull(),
-    provider: text("provider").notNull(),
-    providerAccountId: text("providerAccountId").notNull(),
-    refresh_token: text("refresh_token"),
-    access_token: text("access_token"),
-    expires_at: integer("expires_at"),
-    token_type: text("token_type"),
-    scope: text("scope"),
-    id_token: text("id_token"),
-    session_state: text("session_state"),
+    userId: varchar("userId", { length: 255 }).notNull(),
+    type: varchar("type", { length: 255 }).$type<ProviderType>().notNull(),
+    provider: varchar("provider", { length: 255 }).notNull(),
+    providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
+    refresh_token: varchar("refresh_token", { length: 255 }),
+    access_token: varchar("access_token", { length: 255 }),
+    expires_at: int("expires_at"),
+    token_type: varchar("token_type", { length: 255 }),
+    scope: varchar("scope", { length: 255 }),
+    id_token: varchar("id_token", { length: 255 }),
+    session_state: varchar("session_state", { length: 255 }),
   },
   (account) => ({
     compoundKey: primaryKey(account.provider, account.providerAccountId),
   })
 )
 
-export const sessions = pgTable("sessions", {
-  sessionToken: text("sessionToken").notNull().primaryKey(),
-  userId: text("userId")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+export const sessions = mysqlTable("sessions", {
+  sessionToken: varchar("sessionToken", { length: 255 }).notNull().primaryKey(),
+  userId: varchar("userId", { length: 255 }).notNull(),
   expires: timestamp("expires", { mode: "date" }).notNull(),
 })
 
-export const verificationTokens = pgTable(
+export const verificationTokens = mysqlTable(
   "verificationToken",
   {
-    identifier: text("identifier").notNull(),
-    token: text("token").notNull(),
+    identifier: varchar("identifier", { length: 255 }).notNull(),
+    token: varchar("token", { length: 255 }).notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (vt) => ({
@@ -61,5 +56,19 @@ export const verificationTokens = pgTable(
   })
 )
 
-const queryConnection = createPool({ connectionString: process.env.POSTGRES_URL })
-export const db = drizzle(queryConnection)
+const connection = connect({
+  host: process.env["DATABASE_HOST"],
+  username: process.env["DATABASE_USERNAME"],
+  password: process.env["DATABASE_PASSWORD"],
+});
+
+export const db = drizzle(connection)
+
+export type DbClient = typeof db
+
+export type Schema = {
+  users: typeof users
+  accounts: typeof accounts
+  sessions: typeof sessions
+  verificationTokens: typeof verificationTokens
+}
