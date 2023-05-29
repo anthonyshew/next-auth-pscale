@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DrizzleAdapter = void 0;
 const mysql_1 = require("./mysql");
 const pg_1 = require("./pg");
+const planetscale_1 = require("./planetscale");
 const sqlite_1 = require("./sqlite");
 /**
  * ## Setup
@@ -104,7 +105,7 @@ function DrizzleAdapter(dbType, db, schema) {
         return (0, sqlite_1.SQLiteAdapter)(db, schema);
     }
     if (dbType === "planetscale") {
-        return (0, sqlite_1.SQLiteAdapter)(db, schema);
+        return (0, planetscale_1.PlanetScaleAdapter)(db, schema);
     }
     throw new Error("Unsupported database type in Auth.js Drizzle adapter.");
 }

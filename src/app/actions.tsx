@@ -1,6 +1,6 @@
 "use server";
 
-import { db, users } from "@/schema";
+import { db, users, sessions, accounts } from "@/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -14,7 +14,11 @@ export async function updatePhoneNumber({ userId }: { userId: string }) {
 }
 
 export async function deleteMe({ userId }: { userId: string }) {
-  await db.delete(users).where(eq(users.id, userId));
+  await Promise.all([
+    db.delete(users).where(eq(users.id, userId)),
+    db.delete(sessions).where(eq(sessions.userId, userId)),
+    db.delete(accounts).where(eq(accounts.userId, userId)),
+  ]);
 
   revalidatePath("/");
 }

@@ -99,9 +99,7 @@ function PgAdapter(client, { users, sessions, verificationTokens, accounts }) {
                 .insert(users)
                 .values({ ...data, id: (0, uuid_1.v4)() })
                 .returning()
-                .then(res => {
-                return res[0];
-            });
+                .then(res => res[0]);
         },
         getUser: async (data) => {
             var _a;

@@ -9,7 +9,10 @@ if (!process.env.GH_CLIENT_ID || !process.env.GH_CLIENT_SECRET) {
 }
 
 const handler = NextAuth({
-  adapter: DrizzleAdapter("pg", db, { accounts, users, sessions, verificationTokens }),
+  adapter: DrizzleAdapter("planetscale", db, { accounts, users, sessions, verificationTokens }),
+  logger: {
+    debug: (msg) => console.log(msg)
+  },
   providers: [GitHub({
     clientId: process.env.GH_CLIENT_ID,
     clientSecret: process.env.GH_CLIENT_SECRET

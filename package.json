@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "generate": "dotenv drizzle-kit generate:mysql",
-    "migrate": "dotenv drizzle-kit push:myql",
+    "migrate": "dotenv drizzle-kit push:mysql",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

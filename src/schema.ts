@@ -8,7 +8,7 @@ import {
 import { drizzle } from 'drizzle-orm/planetscale-serverless'
 import { ProviderType } from "next-auth/providers"
 import { connect } from "@planetscale/database";
-
+import { migrate } from "drizzle-orm/planetscale-serverless/migrator";
 
 export const users = mysqlTable("users", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
@@ -16,6 +16,7 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 255 }).notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: varchar("image", { length: 255 }),
+  phone: varchar('phone', { length: 255 })
 })
 
 export const accounts = mysqlTable(
@@ -64,11 +65,4 @@ const connection = connect({
 
 export const db = drizzle(connection)
 
-export type DbClient = typeof db
-
-export type Schema = {
-  users: typeof users
-  accounts: typeof accounts
-  sessions: typeof sessions
-  verificationTokens: typeof verificationTokens
-}
+// migrate(db, { migrationsFolder: "drizzle" });

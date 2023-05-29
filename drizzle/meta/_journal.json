@@ -1,19 +1,12 @@
 {
   "version": "5",
-  "dialect": "pg",
+  "dialect": "mysql",
   "entries": [
     {
       "idx": 0,
       "version": "5",
-      "when": 1685308080055,
-      "tag": "0000_warm_kabuki",
-      "breakpoints": false
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1685311201033,
-      "tag": "0001_harsh_ronan",
+      "when": 1685335850294,
+      "tag": "0000_handy_blade",
       "breakpoints": false
     }
   ]
