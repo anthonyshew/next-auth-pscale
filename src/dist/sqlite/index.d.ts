@@ -15,8 +15,8 @@
  *
  * @module @next-auth/drizzle-adapter
  */
-import type { Schema, DbClient } from './schema';
-import type { Adapter } from "next-auth/adapters";
+import type { Schema, DbClient } from "./schema";
+import type { Adapter } from "@auth/core/adapters";
 /**
  * ## Setup
  *

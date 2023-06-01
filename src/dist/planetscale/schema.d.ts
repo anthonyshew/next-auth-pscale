@@ -1,5 +1,4 @@
-import { ProviderType } from "next-auth/providers";
-export declare const users: import("drizzle-orm/select.types.d-ae2f8e44").ar<{
+export declare const users: import("drizzle-orm/select.types.d-2d1036d9").ar<{
     name: "users";
     schema: undefined;
     columns: {
@@ -49,7 +48,7 @@ export declare const users: import("drizzle-orm/select.types.d-ae2f8e44").ar<{
         }>;
     };
 }>;
-export declare const accounts: import("drizzle-orm/select.types.d-ae2f8e44").ar<{
+export declare const accounts: import("drizzle-orm/select.types.d-2d1036d9").ar<{
     name: "accounts";
     schema: undefined;
     columns: {
@@ -66,7 +65,7 @@ export declare const accounts: import("drizzle-orm/select.types.d-ae2f8e44").ar<
             tableName: "accounts";
             enumValues: [string, ...string[]];
             name: "type";
-            data: ProviderType;
+            data: "email" | "oidc" | "oauth";
             driverParam: string | number;
             hasDefault: false;
             notNull: true;
@@ -153,7 +152,7 @@ export declare const accounts: import("drizzle-orm/select.types.d-ae2f8e44").ar<
         }>;
     };
 }>;
-export declare const sessions: import("drizzle-orm/select.types.d-ae2f8e44").ar<{
+export declare const sessions: import("drizzle-orm/select.types.d-2d1036d9").ar<{
     name: "sessions";
     schema: undefined;
     columns: {
@@ -185,7 +184,7 @@ export declare const sessions: import("drizzle-orm/select.types.d-ae2f8e44").ar<
         }>;
     };
 }>;
-export declare const verificationTokens: import("drizzle-orm/select.types.d-ae2f8e44").ar<{
+export declare const verificationTokens: import("drizzle-orm/select.types.d-2d1036d9").ar<{
     name: "verificationToken";
     schema: undefined;
     columns: {
@@ -217,7 +216,7 @@ export declare const verificationTokens: import("drizzle-orm/select.types.d-ae2f
         }>;
     };
 }>;
-export declare const db: import("drizzle-orm/driver.d-e54af17b").a<Record<string, never>>;
+export declare const db: import("drizzle-orm/planetscale-serverless").PlanetScaleDatabase<Record<string, never>>;
 export type DbClient = typeof db;
 export type Schema = {
     users: typeof users;

@@ -7,7 +7,6 @@ import { useTransition } from "react";
 export const Buttons = () => {
   const { status, data } = useSession();
   let [_, startUpdateTransition] = useTransition();
-  let [__, startDeleteTransition] = useTransition();
 
   return (
     <div>

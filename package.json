@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "generate": "dotenv drizzle-kit generate:mysql",
-    "migrate": "dotenv drizzle-kit push:mysql",
+    "generate": "drizzle-kit generate:mysql",
+    "migrate": "drizzle-kit push:mysql",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -20,7 +20,7 @@
     "drizzle-orm": "^0.26.1",
     "eslint": "8.40.0",
     "eslint-config-next": "13.4.1",
-    "next": "canary",
+    "next": "^13.4.4",
     "next-auth": "^4.22.1",
     "postcss": "8.4.23",
     "react": "18.2.0",
@@ -32,6 +32,6 @@
     "node": "18"
   },
   "devDependencies": {
-    "dotenv-cli": "^7.2.1"
+    "dotenv": "^7.2.1"
   }
 }

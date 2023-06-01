@@ -1,5 +1,4 @@
-import { ProviderType } from "next-auth/providers";
-export declare const users: import("drizzle-orm/db.d-bc9a1d6c").au<{
+export declare const users: import("drizzle-orm/db.d-89e25221").au<{
     name: "users";
     schema: undefined;
     columns: {
@@ -49,7 +48,7 @@ export declare const users: import("drizzle-orm/db.d-bc9a1d6c").au<{
         }>;
     };
 }>;
-export declare const accounts: import("drizzle-orm/db.d-bc9a1d6c").au<{
+export declare const accounts: import("drizzle-orm/db.d-89e25221").au<{
     name: "accounts";
     schema: undefined;
     columns: {
@@ -66,7 +65,7 @@ export declare const accounts: import("drizzle-orm/db.d-bc9a1d6c").au<{
             tableName: "accounts";
             enumValues: [string, ...string[]];
             name: "type";
-            data: ProviderType;
+            data: "email" | "oidc" | "oauth";
             driverParam: string;
             hasDefault: false;
             notNull: true;
@@ -153,7 +152,7 @@ export declare const accounts: import("drizzle-orm/db.d-bc9a1d6c").au<{
         }>;
     };
 }>;
-export declare const sessions: import("drizzle-orm/db.d-bc9a1d6c").au<{
+export declare const sessions: import("drizzle-orm/db.d-89e25221").au<{
     name: "sessions";
     schema: undefined;
     columns: {
@@ -185,7 +184,7 @@ export declare const sessions: import("drizzle-orm/db.d-bc9a1d6c").au<{
         }>;
     };
 }>;
-export declare const verificationTokens: import("drizzle-orm/db.d-bc9a1d6c").au<{
+export declare const verificationTokens: import("drizzle-orm/db.d-89e25221").au<{
     name: "verificationToken";
     schema: undefined;
     columns: {
@@ -217,7 +216,7 @@ export declare const verificationTokens: import("drizzle-orm/db.d-bc9a1d6c").au<
         }>;
     };
 }>;
-export declare const db: import("drizzle-orm/driver.d-b2b94bf9").P<Record<string, never>>;
+export declare const db: import("drizzle-orm/postgres-js").PostgresJsDatabase<Record<string, never>>;
 export type DbClient = typeof db;
 export type Schema = {
     users: typeof users;

@@ -103,37 +103,26 @@ function SQLiteAdapter(client, { users, sessions, accounts, verificationTokens }
         },
         getUser: (data) => {
             var _a;
-            return (_a = client
-                .select()
-                .from(users)
-                .where((0, drizzle_orm_1.eq)(users.id, data))
-                .get()) !== null && _a !== void 0 ? _a : null;
+            return (_a = client.select().from(users).where((0, drizzle_orm_1.eq)(users.id, data)).get()) !== null && _a !== void 0 ? _a : null;
         },
         getUserByEmail: (data) => {
             var _a;
-            return (_a = client
-                .select()
-                .from(users)
-                .where((0, drizzle_orm_1.eq)(users.email, data))
-                .get()) !== null && _a !== void 0 ? _a : null;
+            return ((_a = client.select().from(users).where((0, drizzle_orm_1.eq)(users.email, data)).get()) !== null && _a !== void 0 ? _a : null);
         },
         createSession: (data) => {
-            return client
-                .insert(sessions)
-                .values(data)
-                .returning()
-                .get();
+            return client.insert(sessions).values(data).returning().get();
         },
         getSessionAndUser: (data) => {
             var _a;
-            return (_a = client.select({
+            return ((_a = client
+                .select({
                 session: sessions,
-                user: users
+                user: users,
             })
                 .from(sessions)
                 .where((0, drizzle_orm_1.eq)(sessions.sessionToken, data))
                 .innerJoin(users, (0, drizzle_orm_1.eq)(users.id, sessions.userId))
-                .get()) !== null && _a !== void 0 ? _a : null;
+                .get()) !== null && _a !== void 0 ? _a : null);
         },
         updateUser: (data) => {
             if (!data.id) {
@@ -163,68 +152,65 @@ function SQLiteAdapter(client, { users, sessions, accounts, verificationTokens }
                 .get();
             const account = {
                 ...updatedAccount,
+                type: updatedAccount.type,
                 access_token: (_a = updatedAccount.access_token) !== null && _a !== void 0 ? _a : undefined,
                 token_type: (_b = updatedAccount.token_type) !== null && _b !== void 0 ? _b : undefined,
                 id_token: (_c = updatedAccount.id_token) !== null && _c !== void 0 ? _c : undefined,
                 refresh_token: (_d = updatedAccount.refresh_token) !== null && _d !== void 0 ? _d : undefined,
                 scope: (_e = updatedAccount.scope) !== null && _e !== void 0 ? _e : undefined,
                 expires_at: (_f = updatedAccount.expires_at) !== null && _f !== void 0 ? _f : undefined,
-                session_state: (_g = updatedAccount.session_state) !== null && _g !== void 0 ? _g : undefined
+                session_state: (_g = updatedAccount.session_state) !== null && _g !== void 0 ? _g : undefined,
             };
             return account;
         },
         getUserByAccount: (account) => {
-            var _a;
-            const user = (_a = client.select()
+            const dbAccount = client
+                .select()
+                .from(accounts)
+                .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(accounts.providerAccountId, account.providerAccountId), (0, drizzle_orm_1.eq)(accounts.provider, account.provider))).get();
+            if (!dbAccount)
+                return null;
+            const user = client
+                .select()
                 .from(users)
-                .innerJoin(accounts, ((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(accounts.providerAccountId, account.providerAccountId), (0, drizzle_orm_1.eq)(accounts.provider, account.provider))))
-                .get()) !== null && _a !== void 0 ? _a : null;
-            if (user) {
-                return user.users;
-            }
-            return null;
+                .where((0, drizzle_orm_1.eq)(users.id, dbAccount.userId))
+                .get();
+            return user;
         },
         deleteSession: (sessionToken) => {
             var _a;
-            return (_a = client
+            return ((_a = client
                 .delete(sessions)
                 .where((0, drizzle_orm_1.eq)(sessions.sessionToken, sessionToken))
                 .returning()
-                .get()) !== null && _a !== void 0 ? _a : null;
+                .get()) !== null && _a !== void 0 ? _a : null);
         },
         createVerificationToken: (token) => {
-            return client
-                .insert(verificationTokens)
-                .values(token)
-                .returning()
-                .get();
+            return client.insert(verificationTokens).values(token).returning().get();
         },
         useVerificationToken: (token) => {
             var _a;
             try {
-                return (_a = client
+                return ((_a = client
                     .delete(verificationTokens)
                     .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(verificationTokens.identifier, token.identifier), (0, drizzle_orm_1.eq)(verificationTokens.token, token.token)))
                     .returning()
-                    .get()) !== null && _a !== void 0 ? _a : null;
+                    .get()) !== null && _a !== void 0 ? _a : null);
             }
             catch (err) {
                 throw new Error("No verification token found.");
             }
         },
         deleteUser: (id) => {
-            return client
-                .delete(users)
-                .where((0, drizzle_orm_1.eq)(users.id, id))
-                .returning()
-                .get();
+            return client.delete(users).where((0, drizzle_orm_1.eq)(users.id, id)).returning().get();
         },
         unlinkAccount: (account) => {
-            client.delete(accounts)
+            client
+                .delete(accounts)
                 .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(accounts.providerAccountId, account.providerAccountId), (0, drizzle_orm_1.eq)(accounts.provider, account.provider)))
                 .run();
             return undefined;
-        }
+        },
     };
 }
 exports.SQLiteAdapter = SQLiteAdapter;

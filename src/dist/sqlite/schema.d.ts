@@ -1,5 +1,4 @@
-import { ProviderType } from "next-auth/providers";
-export declare const users: import("drizzle-orm/db.d-a2311092").af<{
+export declare const users: import("drizzle-orm/db.d-7539956f").af<{
     name: "users";
     schema: undefined;
     columns: {
@@ -49,7 +48,7 @@ export declare const users: import("drizzle-orm/db.d-a2311092").af<{
         }>;
     };
 }>;
-export declare const accounts: import("drizzle-orm/db.d-a2311092").af<{
+export declare const accounts: import("drizzle-orm/db.d-7539956f").af<{
     name: "accounts";
     schema: undefined;
     columns: {
@@ -66,7 +65,7 @@ export declare const accounts: import("drizzle-orm/db.d-a2311092").af<{
             tableName: "accounts";
             enumValues: [string, ...string[]];
             name: "type";
-            data: ProviderType;
+            data: "email" | "oidc" | "oauth";
             driverParam: string;
             hasDefault: false;
             notNull: true;
@@ -153,7 +152,7 @@ export declare const accounts: import("drizzle-orm/db.d-a2311092").af<{
         }>;
     };
 }>;
-export declare const sessions: import("drizzle-orm/db.d-a2311092").af<{
+export declare const sessions: import("drizzle-orm/db.d-7539956f").af<{
     name: "sessions";
     schema: undefined;
     columns: {
@@ -185,7 +184,7 @@ export declare const sessions: import("drizzle-orm/db.d-a2311092").af<{
         }>;
     };
 }>;
-export declare const verificationTokens: import("drizzle-orm/db.d-a2311092").af<{
+export declare const verificationTokens: import("drizzle-orm/db.d-7539956f").af<{
     name: "verificationToken";
     schema: undefined;
     columns: {
@@ -217,7 +216,7 @@ export declare const verificationTokens: import("drizzle-orm/db.d-a2311092").af<
         }>;
     };
 }>;
-export declare const db: import("drizzle-orm/driver.d-9d703b84").B<Record<string, never>>;
+export declare const db: import("drizzle-orm/driver.d-d334afe8").B<Record<string, never>>;
 export type DbClient = typeof db;
 export type Schema = {
     users: typeof users;
